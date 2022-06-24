@@ -4,7 +4,7 @@ const nodemailer = require('nodemailer')
 const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
 
-// @desc    Signups a user
+// @desc    Signup a user
 // @route   POST /auth/signup
 // @access  Public
 const signup = asyncHandler(async (req, res) => {
@@ -133,7 +133,7 @@ const verify = asyncHandler(async (req, res) => {
   }
   try {
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
-    const user = await await User.findOne({ email: decoded.email })
+    const user = await User.findOne({ email: decoded.email })
     user.emailVerified = true
     user.save()
     res.status(200).json({
@@ -187,6 +187,29 @@ const login = asyncHandler(async (req, res) => {
     res.status(400)
     throw new Error('Invalid credentials')
   }
+})
+
+// @desc    Refresh access token
+// @route   POST /auth/refresh
+// @access  Public
+const refresh = asyncHandler(async (req, res) => {
+  // checking for cookies
+  const cookies = req.cookies
+  if (!cookies?.jwt) return res.status(401)
+  const refreshToken = cookies.jwt
+
+  // finding user
+  const user = await User.findOne({ refreshToken })
+  // if no user
+  if (!user) {
+    res.status(403)
+    throw new Error('Forbidden')
+  }
+  const accessToken = jwt.sign(
+    { email: user.email },
+    process.env.ACCESS_TOKEN_SECRET
+  )
+  res.status(200).json({ accessToken })
 })
 
 // @desc    Logout a user
@@ -298,7 +321,7 @@ const resetPassword = asyncHandler(async (req, res) => {
   }
   try {
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
-    const user = await await User.findOne({ email: decoded.email })
+    const user = await User.findOne({ email: decoded.email })
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(password, salt)
     user.password = hashedPassword
@@ -317,6 +340,7 @@ module.exports = {
   resent,
   verify,
   login,
+  refresh,
   logout,
   changePassword,
   resetPasswordLink,
