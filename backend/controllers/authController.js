@@ -14,9 +14,17 @@ const signup = asyncHandler(async (req, res) => {
     res.status(400)
     throw new Error('Please add your name')
   }
+  if (name.length < 5 || name.length > 21) {
+    res.status(400)
+    throw new Error('Name should be between 6 to 20 characters')
+  }
   if (!email) {
     res.status(400)
     throw new Error('Please add your email')
+  }
+  if (!email.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
+    res.status(400)
+    throw new Error('Please add a valid email')
   }
   if (!password) {
     res.status(400)
@@ -50,15 +58,15 @@ const signup = asyncHandler(async (req, res) => {
   if (user) {
     // sending email confirmation
     const transporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
+      host: 'smtp-mail.outlook.com',
       port: 587,
       auth: {
-        user: 'dedric.pouros28@ethereal.email',
-        pass: 'Jt39xVhsfPxHebfdd2',
+        user: 'mernauth@outlook.com',
+        pass: process.env.EMAIL_PASS,
       },
     })
-    const info = await transporter.sendMail({
-      from: 'auth-with-mern <noreply@authWithMern.com>',
+    await transporter.sendMail({
+      from: 'mernauth@outlook.com',
       to: email,
       subject: 'Confirm your email',
       text: `Hello ${name}! Please confirm your email by clicking on this link ${jwt.sign(
@@ -67,7 +75,6 @@ const signup = asyncHandler(async (req, res) => {
         { expiresIn: '15min' }
       )}`,
     })
-    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info))
     // sending response
     res.status(201).json({
       message: 'Email Sent',
@@ -96,15 +103,15 @@ const resent = asyncHandler(async (req, res) => {
   }
   // sending email confirmation
   const transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
+    host: 'smtp-mail.outlook.com',
     port: 587,
     auth: {
-      user: 'dedric.pouros28@ethereal.email',
-      pass: 'Jt39xVhsfPxHebfdd2',
+      user: 'mernauth@outlook.com',
+      pass: process.env.EMAIL_PASS,
     },
   })
-  const info = await transporter.sendMail({
-    from: 'auth-with-mern <noreply@authWithMern.com>',
+  await transporter.sendMail({
+    from: 'mernauth@outlook.com',
     to: email,
     subject: 'Confirm your email',
     text: `Hello ${
@@ -115,7 +122,6 @@ const resent = asyncHandler(async (req, res) => {
       { expiresIn: '15min' }
     )}`,
   })
-  console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info))
   // sending response
   res.status(201).json({
     message: 'Email Sent',
@@ -163,6 +169,11 @@ const login = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email })
   // checking credentials
   if (user && (await bcrypt.compare(password, user.password))) {
+    // checking if email is verified
+    if (!user.emailVerified) {
+      res.status(400)
+      throw new Error('Email not verified')
+    }
     // saving refresh token and sending it
     const refreshToken = jwt.sign({ email }, process.env.REFRESH_TOKEN_SECRET, {
       expiresIn: '1d',
@@ -282,15 +293,15 @@ const resetPasswordLink = asyncHandler(async (req, res) => {
   }
   // sending password reset
   const transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
+    host: 'smtp-mail.outlook.com',
     port: 587,
     auth: {
-      user: 'dedric.pouros28@ethereal.email',
-      pass: 'Jt39xVhsfPxHebfdd2',
+      user: 'mernauth@outlook.com',
+      pass: process.env.EMAIL_PASS,
     },
   })
-  const info = await transporter.sendMail({
-    from: 'auth-with-mern <noreply@authWithMern.com>',
+  await transporter.sendMail({
+    from: 'mernauth@outlook.com',
     to: email,
     subject: 'Reset Password Link',
     text: `Hello ${
@@ -301,7 +312,6 @@ const resetPasswordLink = asyncHandler(async (req, res) => {
       { expiresIn: '15min' }
     )}`,
   })
-  console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info))
   res.status(200).json({ message: 'Password reset link send' })
 })
 
