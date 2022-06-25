@@ -1,15 +1,15 @@
 import { useLocation, Navigate, Outlet } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 
-const PrivateRoutes = () => {
+const PublicRoutes = () => {
   const { auth } = useAuth()
   const location = useLocation()
 
-  return auth?.email ? (
+  return !auth?.email ? (
     <Outlet />
   ) : (
-    <Navigate to='/login' state={{ from: location }} replace />
+    <Navigate to='/' state={{ from: location }} replace />
   )
 }
 
-export default PrivateRoutes
+export default PublicRoutes
