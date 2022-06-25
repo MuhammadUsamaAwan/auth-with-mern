@@ -69,10 +69,10 @@ const signup = asyncHandler(async (req, res) => {
       from: 'mernauth@outlook.com',
       to: email,
       subject: 'Confirm your email',
-      text: `Hello ${name}! Please confirm your email by clicking on this link ${jwt.sign(
+      text: `Hello ${name}! Please confirm your email by clicking on this link https://authwithmern.herokuapp.com/verify/${jwt.sign(
         { email },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: '10s' }
+        { expiresIn: '15min' }
       )}`,
     })
     // sending response
@@ -116,10 +116,10 @@ const resent = asyncHandler(async (req, res) => {
     subject: 'Confirm your email',
     text: `Hello ${
       user.name
-    }! Please confirm your email by clicking on this link ${jwt.sign(
+    }! Please confirm your email by clicking on this link https://authwithmern.herokuapp.com/verify/${jwt.sign(
       { email },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: '10s' }
+      { expiresIn: '15min' }
     )}`,
   })
   // sending response
@@ -192,7 +192,7 @@ const login = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       accessToken: jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: '10s',
+        expiresIn: '15min',
       }),
     })
   } else {
@@ -307,10 +307,10 @@ const resetPasswordLink = asyncHandler(async (req, res) => {
     subject: 'Reset Password Link',
     text: `Hello ${
       user.name
-    }! Please reset your password by clicking on this link ${jwt.sign(
+    }! Please reset your password by clicking on this link https://authwithmern.herokuapp.com/resetpassword/${jwt.sign(
       { email },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: '10s' }
+      { expiresIn: '15min' }
     )}`,
   })
   res.status(200).json({ message: 'Password reset link send' })
