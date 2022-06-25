@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { BASE_URL } from '../config/config'
+import useAuth from './useAuth'
 
 const useAxios = () => {
   const [response, setResponse] = useState([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [controller, setController] = useState()
+  const { auth } = useAuth()
 
   const axiosFetch = async configObj => {
     const { method, url, requestConfig = {} } = configObj
@@ -15,15 +17,22 @@ const useAxios = () => {
       setLoading(true)
       const ctrl = new AbortController()
       setController(ctrl)
-      const res = await axios[method.toLowerCase()](BASE_URL + url, {
-        ...requestConfig,
-        signal: ctrl.signal,
-      })
+      const res = await axios[method.toLowerCase()](
+        BASE_URL + url,
+        {
+          ...requestConfig,
+          signal: ctrl.signal,
+        },
+        {
+          headers: { Authorization: `Bearer ${auth?.accessToken}` },
+          withCredentials: true,
+        }
+      )
       setError('')
-      setResponse(res.data)
+      setResponse(res?.data)
     } catch (err) {
       setResponse('')
-      setError(err.response.data)
+      setError(err?.response?.data)
     } finally {
       setLoading(false)
     }

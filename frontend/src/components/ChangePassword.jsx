@@ -1,30 +1,42 @@
 import { useState } from 'react'
 import useAxios from '../hooks/useAxios'
+import useAuth from '../hooks/useAuth'
 
-const ForgotPassword = () => {
-  const [email, setEmail] = useState('')
+const ChangePassword = () => {
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
   const [response, error, loading, sentLink] = useAxios()
+  const { auth } = useAuth()
   const handleSubmit = e => {
     e.preventDefault()
     sentLink({
       method: 'POST',
-      url: 'resetpasswordlink',
+      url: 'changepassword',
       requestConfig: {
-        email,
+        currentPassword,
+        newPassword,
       },
     })
   }
   return (
     <section>
-      <h1 className='text-center'>Reset Password</h1>
+      <h1 className='text-center'>Change Password</h1>
       <form onSubmit={handleSubmit}>
         <input
           className='form-control mb-2'
           style={{ width: '20rem' }}
-          type='email'
-          placeholder='Email Address'
-          value={email}
-          onChange={e => setEmail(e.target.value)}
+          type='password'
+          placeholder='Current Password'
+          value={currentPassword}
+          onChange={e => setCurrentPassword(e.target.value)}
+          required
+        />
+        <input
+          className='form-control mb-2'
+          type='password'
+          placeholder='New Password'
+          value={newPassword}
+          onChange={e => setNewPassword(e.target.value)}
           required
         />
         {error && (
@@ -35,7 +47,7 @@ const ForgotPassword = () => {
         )}
         <div className='d-grid'>
           <button type='submit' className='btn btn-primary' disabled={loading}>
-            Sent Link
+            Change
           </button>
         </div>
       </form>
@@ -43,4 +55,4 @@ const ForgotPassword = () => {
   )
 }
 
-export default ForgotPassword
+export default ChangePassword

@@ -1,16 +1,19 @@
 import { useState } from 'react'
+import { useParams } from 'react-router-dom'
 import useAxios from '../hooks/useAxios'
 
-const ForgotPassword = () => {
-  const [email, setEmail] = useState('')
+const ResetPassword = () => {
+  const params = useParams()
+  const [password, setPassword] = useState('')
   const [response, error, loading, sentLink] = useAxios()
   const handleSubmit = e => {
     e.preventDefault()
     sentLink({
       method: 'POST',
-      url: 'resetpasswordlink',
+      url: 'resetpassword',
       requestConfig: {
-        email,
+        password,
+        token: params.token,
       },
     })
   }
@@ -21,10 +24,10 @@ const ForgotPassword = () => {
         <input
           className='form-control mb-2'
           style={{ width: '20rem' }}
-          type='email'
-          placeholder='Email Address'
-          value={email}
-          onChange={e => setEmail(e.target.value)}
+          type='password'
+          placeholder='Password'
+          value={password}
+          onChange={e => setPassword(e.target.value)}
           required
         />
         {error && (
@@ -35,7 +38,7 @@ const ForgotPassword = () => {
         )}
         <div className='d-grid'>
           <button type='submit' className='btn btn-primary' disabled={loading}>
-            Sent Link
+            Reset
           </button>
         </div>
       </form>
@@ -43,4 +46,4 @@ const ForgotPassword = () => {
   )
 }
 
-export default ForgotPassword
+export default ResetPassword

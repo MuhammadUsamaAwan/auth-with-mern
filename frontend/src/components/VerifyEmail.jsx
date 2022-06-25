@@ -13,9 +13,6 @@ const VerifyEmail = () => {
         token: params.token,
       },
     })
-    console.log(response)
-    console.log(error)
-    console.log(loading)
   }, [])
   if (loading) return <p>Please Wait...</p>
   return (
