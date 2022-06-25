@@ -5,7 +5,7 @@ const PrivateRoutes = () => {
   const { auth } = useAuth()
   const location = useLocation()
 
-  return auth?.email ? (
+  return auth?.accessToken ? (
     <Outlet />
   ) : (
     <Navigate to='/login' state={{ from: location }} replace />

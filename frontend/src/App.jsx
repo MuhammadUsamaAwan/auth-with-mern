@@ -6,6 +6,7 @@ import Signup from './components/Signup'
 import VerifyEmail from './components/VerifyEmail'
 import PrivateRoutes from './routes/PrivateRoutes'
 import PublicRoutes from './routes/PublicRoutes'
+import PersistRoutes from './routes/PersistRoutes'
 import Home from './components/Home'
 import useAxios from './hooks/useAxios'
 import ForgotPassword from './components/ForgotPassword'
@@ -34,7 +35,7 @@ const App = () => {
           <button
             className='btn btn-link p-0'
             onClick={handleLogout}
-            disabled={auth.email === undefined}
+            disabled={auth.accessToken === undefined}
           >
             Logout
           </button>
@@ -42,20 +43,26 @@ const App = () => {
       </header>
       <main className='container d-flex justify-content-center align-items-center flex-col mt-5'>
         <Routes>
-          <Route element={<PublicRoutes />}>
-            <Route exact path='/login' element={<Login />} />
-            <Route exact path='/signup' element={<Signup />} />
-            <Route exact path='/verify/:token' element={<VerifyEmail />} />
-          </Route>
-          <Route exact path='/forgotpassword' element={<ForgotPassword />} />
-          <Route
-            exact
-            path='/resetpassword/:token'
-            element={<ResetPassword />}
-          />
-          <Route element={<PrivateRoutes />}>
-            <Route exact path='/' element={<Home />} />
-            <Route exact path='/changepassword' element={<ChangePassword />} />
+          <Route element={<PersistRoutes />}>
+            <Route element={<PublicRoutes />}>
+              <Route exact path='/login' element={<Login />} />
+              <Route exact path='/signup' element={<Signup />} />
+              <Route exact path='/verify/:token' element={<VerifyEmail />} />
+            </Route>
+            <Route exact path='/forgotpassword' element={<ForgotPassword />} />
+            <Route
+              exact
+              path='/resetpassword/:token'
+              element={<ResetPassword />}
+            />
+            <Route element={<PrivateRoutes />}>
+              <Route exact path='/' element={<Home />} />
+              <Route
+                exact
+                path='/changepassword'
+                element={<ChangePassword />}
+              />
+            </Route>
           </Route>
         </Routes>
       </main>
