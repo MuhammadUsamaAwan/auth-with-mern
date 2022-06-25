@@ -11,22 +11,19 @@ const useAxios = () => {
   const { auth } = useAuth()
 
   const axiosFetch = async configObj => {
-    const { method, url, requestConfig = {} } = configObj
+    const { method, url, requestConfig = {}, axiosInstance = axios } = configObj
 
     try {
       setLoading(true)
       const ctrl = new AbortController()
       setController(ctrl)
-      const res = await axios[method.toLowerCase()](
+      const res = await axiosInstance[method.toLowerCase()](
         BASE_URL + url,
         {
           ...requestConfig,
           signal: ctrl.signal,
         },
-        {
-          headers: { Authorization: `Bearer ${auth?.accessToken}` },
-          withCredentials: true,
-        }
+        { withCredentials: true }
       )
       setError('')
       setResponse(res?.data)

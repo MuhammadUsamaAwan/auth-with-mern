@@ -72,7 +72,7 @@ const signup = asyncHandler(async (req, res) => {
       text: `Hello ${name}! Please confirm your email by clicking on this link ${jwt.sign(
         { email },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: '15min' }
+        { expiresIn: '10s' }
       )}`,
     })
     // sending response
@@ -119,7 +119,7 @@ const resent = asyncHandler(async (req, res) => {
     }! Please confirm your email by clicking on this link ${jwt.sign(
       { email },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: '15min' }
+      { expiresIn: '10s' }
     )}`,
   })
   // sending response
@@ -180,19 +180,19 @@ const login = asyncHandler(async (req, res) => {
     })
     user.refreshToken = refreshToken
     user.save()
+    // sending response
     res.cookie('jwt', refreshToken, {
       httpOnly: true,
       sameSite: 'None',
       secure: true,
       maxAge: 24 * 60 * 60 * 1000,
     })
-    // sending json response
     res.json({
       _id: user.id,
       name: user.name,
       email: user.email,
       accessToken: jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: '15min',
+        expiresIn: '10s',
       }),
     })
   } else {
@@ -310,7 +310,7 @@ const resetPasswordLink = asyncHandler(async (req, res) => {
     }! Please reset your password by clicking on this link ${jwt.sign(
       { email },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: '15min' }
+      { expiresIn: '10s' }
     )}`,
   })
   res.status(200).json({ message: 'Password reset link send' })
@@ -346,6 +346,13 @@ const resetPassword = asyncHandler(async (req, res) => {
   }
 })
 
+// @desc    Get current user
+// @route   GET /auth/user
+// @access  Private
+const user = asyncHandler(async (req, res) => {
+  res.status(200).json({ user: req.user })
+})
+
 module.exports = {
   signup,
   resent,
@@ -356,4 +363,5 @@ module.exports = {
   changePassword,
   resetPasswordLink,
   resetPassword,
+  user,
 }
