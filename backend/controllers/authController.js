@@ -207,15 +207,14 @@ const login = asyncHandler(async (req, res) => {
 const refresh = asyncHandler(async (req, res) => {
   // checking for cookies
   const cookies = req.cookies
-  if (!cookies?.jwt) return res.status(401)
+  if (!cookies?.jwt) return res.sendStatus(401)
   const refreshToken = cookies.jwt
 
   // finding user
   const user = await User.findOne({ refreshToken })
   // if no user
   if (!user) {
-    res.status(403)
-    throw new Error('Forbidden')
+    res.sendStatus(403)
   }
   const accessToken = jwt.sign(
     { email: user.email },
